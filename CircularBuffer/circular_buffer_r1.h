@@ -96,6 +96,14 @@ public:
 		*R = RI;
 	}
 
+	/// <summary>
+	/// Get Size
+	/// </summary>
+	/// <returns>Size in bytes</returns>
+	unsigned getSize()
+	{
+		return size;
+	}
 private:
 	unsigned RI = 0, WI = 0;	// read/write indexies
 	unsigned availableData = 0, availableSpace = 0;

@@ -5,9 +5,9 @@
 
 #include "circular_buffer_r1.h"
 
-CircularBufferR1 cb(8);
 
-void singleThreadTest(unsigned threadId)
+
+void singleThreadTest(unsigned threadId, CircularBufferR1& cb)
 {
     char sampleInput[] = "RANDOM STRING";
     char output[sizeof(sampleInput)];
@@ -37,13 +37,14 @@ void singleThreadTest(unsigned threadId)
 }
 
 
-void multiThreadTest(unsigned threadCount)
+void multiThreadTest(unsigned threadCount, CircularBufferR1& cb)
 {
     std::thread* threads = new std::thread[threadCount];
+    cb.tryRead(0, NULL);
 
     for (unsigned i = 0; i < threadCount; i++)
     {
-        threads[i] = std::thread(singleThreadTest, i);
+        threads[i] = std::thread(singleThreadTest, i, std::ref(cb));
     }
     for (unsigned i = 0; i < threadCount; i++)
     {
@@ -55,8 +56,10 @@ void multiThreadTest(unsigned threadCount)
 int main()
 {
     std::cout << "Hello World!\n";
-    
-    multiThreadTest(5);
+    CircularBufferR1 cb(8);
+    // CircularBufferR1& refCb = cb;
+
+    multiThreadTest(5, cb);
     // singleThreadTest(1);
 
 }

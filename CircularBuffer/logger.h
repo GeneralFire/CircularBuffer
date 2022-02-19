@@ -27,10 +27,10 @@ public:
     Logger& operator=(Logger const&) = delete;
 	enum class logLevel
 	{
-		DEBUG = 0,
+		DBG = 0,
 		LOG,
-		WARN,
-		ERROR
+		WRN,
+		ERR,
 	};
 
     static void log(int lg, char const* const str)
@@ -44,16 +44,16 @@ public:
         const char* start = NULL;
         switch (lg)
         {
-        case logLevel::DEBUG:
+        case logLevel::DBG:
             start = GREEN;
             break;
         case logLevel::LOG:
             start = WHITE;
             break;
-        case logLevel::WARN:
+        case logLevel::WRN:
             start = YELLOW;
             break;
-        case logLevel::ERROR:
+        case logLevel::ERR:
             start = RED;
             break;
         }

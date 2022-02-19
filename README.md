@@ -1,6 +1,10 @@
 # Circular Buffer
 
-## Minimal circular buffer implementation 
+## Minimal thread safe circular buffer implementation 
+
+## Output:
+
+Buffer values stands for thread number who wrote it.
 
 ## TO DO:
 - [ ] Fix constructor by reference;

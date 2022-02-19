@@ -3,14 +3,21 @@
 #include <mutex>
 #include <thread>
 #include <chrono>
+#include <string>
 
+#include "logger.h"
 #include "circular_buffer_r1.h"
 
 void writer(unsigned threadId, CircularBufferR1& cb)
 {
-    char sampleInput[] = "RANDOM STRING";
+    unsigned strSize = 13;
+    char strChar = threadId + 0x30;
+    char* sampleInput = new char[strSize];
+    memset(sampleInput, strChar, strSize);
+    sampleInput[strSize] = '\0';
+    // char sampleInput[] = "RANDOM STRING";
     unsigned cursor = 0;
-    unsigned step = sizeof(sampleInput);
+    unsigned step = strlen(sampleInput);
     while (true)
     {
         if (cursor + step > sizeof(sampleInput))
@@ -19,10 +26,10 @@ void writer(unsigned threadId, CircularBufferR1& cb)
         }
 
         unsigned writen = cb.tryWrite(step, &sampleInput[cursor]);
-        std::this_thread::sleep_for(std::chrono::milliseconds(600));
+        std::this_thread::sleep_for(std::chrono::milliseconds(400));
         if (writen)
         {
-            std::cout << "THREAD " << threadId << " WRITED" << writen << " BYTES" << std::endl;
+            std::cout << "THREAD " << threadId << " WRITED " << writen << " BYTES" << std::endl;
         }
         else
         {
@@ -39,15 +46,17 @@ void reader(CircularBufferR1& cb)
 
     while (true)
     {
-        std::this_thread::sleep_for(std::chrono::milliseconds(900));
+        std::this_thread::sleep_for(std::chrono::milliseconds(600));
         memset(buffer, 0, buffer_size);
-        read = cb.tryRead(10, buffer);
+        read = cb.tryRead(rand() % buffer_size, buffer);
         if (read)
         {
-            std::cout << buffer << std::endl;
+            // std::cout << "READER READ: " << buffer << std::endl;
+            Logger::log(2, buffer);
         }
     }
 }
+
 void singleThreadTest(unsigned threadId, CircularBufferR1& cb)
 {
     char sampleInput[] = "RANDOM STRING";
@@ -80,11 +89,7 @@ void singleThreadTest(unsigned threadId, CircularBufferR1& cb)
 
 void multiThreadTest(unsigned threadCount, CircularBufferR1& cb)
 {
-
-
     std::thread* threads = new std::thread[threadCount];
-    cb.tryRead(0, NULL);
-
     for (unsigned i = 0; i < threadCount; i++)
     {
         // threads[i] = std::thread(singleThreadTest, i, std::ref(cb));
@@ -100,7 +105,7 @@ void multiThreadTest(unsigned threadCount, CircularBufferR1& cb)
 int main()
 {
     std::cout << "Hello World!\n";
-    CircularBufferR1 cb(800);
+    CircularBufferR1 cb(40);
     // CircularBufferR1& refCb = cb;
 
     multiThreadTest(2, cb);

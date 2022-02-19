@@ -1,2 +1,2 @@
 #include "logger.h"
-Logger::logLevel Logger::currentLogLevel = Logger::logLevel::DEBUG;
+Logger::logLevel Logger::currentLogLevel = Logger::logLevel::DBG;

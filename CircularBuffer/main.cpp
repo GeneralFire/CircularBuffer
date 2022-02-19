@@ -1,22 +1,12 @@
 #include <iostream>
 #include <Windows.h>
 #include <mutex>
+#include <thread>
+
 #include "circular_buffer_r1.h"
 
-std::mutex m;
-
-typedef struct
+void singleThreadTest(CircularBufferR1& cb, unsigned threadId)
 {
-    unsigned threadId;
-    CircularBufferR1& cb;
-} threadArgs;
-
-void singleThreadTest(void* args)
-{
-    threadArgs* tArgs = (threadArgs*)args;
-    unsigned threadId = tArgs->threadId;
-    CircularBufferR1 cb = tArgs->cb;
-
     char sampleInput[] = "RANDOM STRING";
     char output[sizeof(sampleInput)];
     srand((unsigned) time(0));
@@ -44,41 +34,27 @@ void singleThreadTest(void* args)
     }
 }
 
+/*
 void multiThreadTest(unsigned threadCount, CircularBufferR1& cb)
-{   
-    HANDLE* hThreads = new HANDLE[threadCount];
-    // std::fill(hThreads, hThreads + threadCount, 0);
-    threadArgs* args = (threadArgs * )malloc(sizeof(threadArgs)*threadCount);
+{
+    std::thread* threads = new std::thread[threadCount];
 
     for (unsigned i = 0; i < threadCount; i++)
     {
-        args[i].cb = cb;
-        args[i].threadId = i;
-
-        hThreads[i] = CreateThread(
-            NULL,    // Thread attributes
-            0,       // Stack size (0 = use default)
-            (LPTHREAD_START_ROUTINE) singleThreadTest, // Thread start address
-            &args,    // Parameter to pass to the thread
-            0,       // Creation flags
-            NULL);   // Thread id
+        threads[i] = std::thread(singleThreadTest, cb, i);
     }
-
     for (unsigned i = 0; i < threadCount; i++)
     {
-        if (hThreads[i])
-        {
-            WaitForSingleObject(hThreads[i], INFINITE);
-            CloseHandle(hThreads[i]);
-        }
+        threads[i].join();
     }
 }
+*/
 
 int main()
 {
     std::cout << "Hello World!\n";
     CircularBufferR1 cb(8);
 
-    multiThreadTest(5, cb);
+    singleThreadTest(cb, 1);
 
 }

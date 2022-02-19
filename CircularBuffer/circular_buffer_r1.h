@@ -8,7 +8,6 @@ class CircularBufferR1
 {
 public:
 	// CircularBufferR1& operator=(CircularBufferR1 const&) = delete;
-	// CircularBufferR1(const CircularBufferR1&) = default;
 	~CircularBufferR1()	{ delete[] data; };
 
 	CircularBufferR1(unsigned int sizeInBytes) : 
